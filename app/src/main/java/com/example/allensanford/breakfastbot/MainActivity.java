@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -90,12 +93,13 @@ public class MainActivity extends Activity {
                 // Start the queue
                 queue.start();
 
-                String url ="http://129.21.40.41";
+                String url = "http://129.21.40.41";
 
                 Log.e(" After Start:", queue.toString());
 
+
                 // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/1/",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -115,8 +119,9 @@ public class MainActivity extends Activity {
                 });
                 // Add the request to the RequestQueue.
                 queue.add(stringRequest);
-            }
-        });
+            }});
+
+
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
         mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
