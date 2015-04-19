@@ -1,5 +1,12 @@
 package com.example.allensanford.breakfastbot;
 
+
+import com.android.volley.*;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.example.allensanford.breakfastbot.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -7,8 +14,13 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 
 /**
@@ -54,7 +66,57 @@ public class MainActivity extends Activity {
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+        final Button data_btn = (Button) findViewById(R.id.data);
 
+        data_btn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (AUTO_HIDE) {
+                    delayedHide(AUTO_HIDE_DELAY_MILLIS);
+                }
+
+                Toast.makeText(getApplicationContext(), "Clicked Data!",
+                        Toast.LENGTH_LONG).show();
+
+
+                // Instantiate the RequestQueue.
+                RequestQueue queue;
+                // Instantiate the cache
+                Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+                // Set up the network to use HttpURLConnection as the HTTP client.
+                Network network = new BasicNetwork(new HurlStack());
+                // Instantiate the RequestQueue with the cache and network.
+                queue = new RequestQueue(cache, network);
+                // Start the queue
+                queue.start();
+
+                String url ="http://129.21.40.41";
+
+                Log.e(" After Start:", queue.toString());
+
+                // Request a string response from the provided URL.
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v(" In Response", response);
+
+                                Toast.makeText(getApplicationContext(), response,
+                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "It worked!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "Nope!",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+                // Add the request to the RequestQueue.
+                queue.add(stringRequest);
+            }
+        });
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
         mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
@@ -131,15 +193,7 @@ public class MainActivity extends Activity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
+
 
     Handler mHideHandler = new Handler();
     Runnable mHideRunnable = new Runnable() {
@@ -156,5 +210,9 @@ public class MainActivity extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    protected void onDestroy(Bundle savedInstanceState) {
+
     }
 }
