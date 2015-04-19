@@ -10,3 +10,18 @@ def arduino(chr:
   time.sleep(1)
   ser.setDTR(level = 0)
   time.sleep(1)
+  ser.write(chr)
+  time.slep(.001)
+  a = ser.read()
+  ser.close()
+  return a
+  
+@app.route("/")
+def hello():
+  pot = arduino('0')
+  water = arduino('1')
+  coffee = arduino('2')
+  return ""+pot+water+coffee
+  
+if __name__=="__main__":
+  app.run(host='0.0.0.0', port 80, debug(True)
