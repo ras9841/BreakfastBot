@@ -19,7 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
+import android.os.SystemClock;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -71,6 +71,8 @@ public class MainActivity extends Activity {
         final View contentView = findViewById(R.id.fullscreen_content);
         final Button data_btn = (Button) findViewById(R.id.data);
 
+        final long last_click = 0;
+
         data_btn.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,28 +99,35 @@ public class MainActivity extends Activity {
 
                 Log.e(" After Start:", queue.toString());
 
+                if( SystemClock.elapsedRealtime() - last_click >= 1000 ) {
 
-                // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/1/",
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Log.v(" In Response", response);
+                    // Request a string response from the provided URL.
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Log.v(" In Response", response);
 
-                                Toast.makeText(getApplicationContext(), response,
-                                        Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getApplicationContext(), "It worked!",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), "Nope!",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-                // Add the request to the RequestQueue.
-                queue.add(stringRequest);
+                                    // pot|water|coffee
+                                    Toast.makeText(getApplicationContext(), response,
+                                            Toast.LENGTH_SHORT).show();
+
+
+                                    Toast.makeText(getApplicationContext(), "It worked!",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), "Nope!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    // Add the request to the RequestQueue.
+                    queue.add(stringRequest);
+                }865
+
+
             }});
 
 
